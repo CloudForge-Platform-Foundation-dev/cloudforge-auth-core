@@ -1,5 +1,5 @@
-﻿[build-system]
-requires = ["setuptools>=61.0.0"]
+[build-system]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +7,3 @@ name = "cloudforge-auth-core"
 version = "1.1.1"
 description = "CloudForge Auth Core library"
 dependencies = []
-
-[tool.setuptools.packages.find]
-where = ["src"]
