@@ -1,4 +1,4 @@
-﻿"""Scope claim parsing — Identity Contract v1 §3."""
+"""Scope claim parsing — Identity Contract v1 §3."""
 
 from __future__ import annotations
 
