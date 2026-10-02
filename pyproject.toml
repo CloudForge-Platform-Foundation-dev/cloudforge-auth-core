@@ -1,10 +1,10 @@
-﻿[build-system]
+[build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloudforge-auth-core"
-version = "1.1.5"
+version = "1.1.6"
 description = "Shared JWT verification and scope enforcement implementing CloudForge Identity Contract v1"
 readme = "README.md"
 requires-python = ">=3.10"
