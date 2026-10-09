@@ -1,0 +1,17 @@
+
+# Helper scripts (temporary)
+add_tests.py
+create_integration_tests.py
+create_unit_tests.py
+fix_config.py
+fix_test_jwks.py
+fix_test_jwks_imports.py
+setup_tests.py
+# Build artifacts
+src/cloudforge_auth_core.egg-info/
+src/cloudforge_auth_core/__pycache__/
+tests/__pycache__/
+*.egg-info/
+__pycache__/
+# Testing
+.pytest_cache/

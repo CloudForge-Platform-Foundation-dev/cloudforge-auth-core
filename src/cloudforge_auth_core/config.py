@@ -22,3 +22,11 @@ class AuthConfig:
     jwks_cache_ttl_seconds: int = 3600
     # Contract v1: RS256 only.
     algorithms: Sequence[str] = field(default_factory=lambda: ("RS256",))
+
+    def __post_init__(self):
+        """Enforce RS256-only per Identity Contract v1."""
+        if tuple(self.algorithms) != ("RS256",):
+            raise ValueError(
+                f"CloudForge Identity Contract v1 requires RS256 only. "
+                f"Got: {list(self.algorithms)}"
+            )
