@@ -12,6 +12,13 @@ from cloudforge_auth_core.config import AuthConfig
 
 logger = logging.getLogger(__name__)
 
+# The one fixed message PyJWT uses when a JWKS document contains no usable
+# signing keys. It is compared with startswith(), never "in": the other
+# PyJWKClientError message embeds the token's own attacker-controlled ``kid``
+# ("Unable to find a signing key that matches: <kid>"), so a substring match
+# could be forced by choosing a kid that contains this phrase.
+_NO_SIGNING_KEYS_PREFIX = "The JWKS endpoint did not contain any signing keys"
+
 
 class JWKSUnavailableError(Exception):
     """
@@ -117,15 +124,17 @@ class JWKSCache:
             # (b)'s message embeds the token's own attacker-controlled
             # `kid` value verbatim. A token with kid="connection-lost"
             # must still be a 401, not a 503, and previously wasn't.
-            if "did not contain any signing keys" in str(exc):
+            if str(exc).startswith(_NO_SIGNING_KEYS_PREFIX):
                 logger.warning("JWKS endpoint has no usable keys: %s", exc)
                 raise JWKSUnavailableError(
-                    f"JWKS endpoint misconfigured: {exc}"
+                    "JWKS endpoint misconfigured: no signing keys"
                 ) from exc
             # Genuine "kid not found after refresh" — the client's
             # token is bad, not our infrastructure. Let it propagate;
             # dependencies.py maps jwt.PyJWKClientError → 401.
-            logger.debug("JWKS key lookup failed: %s", exc)
+            # The exception text contains the raw ``kid`` from the token, so
+            # it is deliberately not logged.
+            logger.debug("JWKS key lookup failed: kid not found or invalid")
             raise
         # NOTE: jwt.DecodeError (malformed token structure, raised by
         # get_signing_key_from_jwt's own unverified-header decode) is
