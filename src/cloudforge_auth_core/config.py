@@ -1,4 +1,4 @@
-"""Auth configuration — Identity Contract v1 §2."""
+﻿"""Auth configuration â€” Identity Contract v1 Â§2."""
 
 from __future__ import annotations
 
@@ -24,9 +24,11 @@ class AuthConfig:
     algorithms: Sequence[str] = field(default_factory=lambda: ("RS256",))
 
     def __post_init__(self):
-        """Enforce RS256-only per Identity Contract v1."""
-        if tuple(self.algorithms) != ("RS256",):
+        """Enforce RS256-only per Identity Contract v1 and freeze algorithms."""
+        algs = tuple(self.algorithms)
+        if algs != ("RS256",):
             raise ValueError(
                 f"CloudForge Identity Contract v1 requires RS256 only. "
-                f"Got: {list(self.algorithms)}"
+                f"Got: {list(algs)}"
             )
+        object.__setattr__(self, "algorithms", algs)

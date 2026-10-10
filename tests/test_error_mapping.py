@@ -1,4 +1,4 @@
-"""
+﻿"""
 Integration tests for error mapping: exception to HTTP status.
 Tests 401, 403, 503 error semantics per Identity Contract v1 §5.
 """
@@ -262,4 +262,40 @@ def test_unknown_kid_returns_401_not_503(mock_jwks_server, test_rsa_private_pem)
     
     response = client.get("/protected", headers={"Authorization": f"Bearer {token}"})
     # Critical: unknown kid should be 401, not 503
+    assert response.status_code == 401
+
+def test_kid_with_did_not_contain_phrase_returns_401_not_503(mock_jwks_server, test_rsa_private_pem):
+    """Test that a kid containing the phrase 'did not contain any signing keys'
+    returns 401 (invalid token), not 503 (service error).
+    This is a regression test for the kid injection vulnerability where
+    PyJWT's error message embeds the kid verbatim."""
+    app = FastAPI()
+    config = AuthConfig(
+        issuer="https://test.cloudforge.internal",
+        audience="cloudforge-platform",
+        jwks_url=mock_jwks_server,
+    )
+    jwks_cache = JWKSCache(config)
+    get_current_user, _ = build_auth_dependencies(config, jwks_cache=jwks_cache)
+
+    @app.get("/protected")
+    def endpoint(user=Depends(get_current_user)):
+        return {"ok": True}
+
+    client = TestClient(app)
+
+    now = int(time.time())
+    payload = {
+        "iss": config.issuer,
+        "sub": "test",
+        "aud": config.audience,
+        "exp": now + 3600,
+        "iat": now,
+        "scope": "test",
+    }
+    # Use a kid that contains the phrase PyJWT uses in its error message
+    token = jwt.encode(payload, test_rsa_private_pem, algorithm="RS256", headers={"kid": "x did not contain any signing keys"})
+
+    response = client.get("/protected", headers={"Authorization": f"Bearer {token}"})
+    # Critical: must be 401, not 503
     assert response.status_code == 401
