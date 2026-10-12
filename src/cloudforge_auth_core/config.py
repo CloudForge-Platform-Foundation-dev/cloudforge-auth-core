@@ -1,32 +1,19 @@
-"""Auth configuration — Identity Contract v1 §2."""
-
-from __future__ import annotations
-
-from dataclasses import dataclass, field
-from typing import Sequence
-
+﻿from dataclasses import dataclass, field
+from typing import List, Tuple
 
 @dataclass(frozen=True)
 class AuthConfig:
-    """
-    Shared auth settings consumed by JWKSCache and build_auth_dependencies.
-
-    Studios translate their environment-specific settings into this object
-    (see e.g. Nova's ``src/auth/config.py``) and never re-implement JWT
-    verification themselves.
-    """
-
-    issuer: str
-    audience: str
-    jwks_url: str
-    jwks_cache_ttl_seconds: int = 3600
-    # Contract v1: RS256 only.
-    algorithms: Sequence[str] = field(default_factory=lambda: ("RS256",))
+    algorithms: Tuple[str, ...] = ("RS256",)
+    jwks_url: str = ""
+    issuer: str = ""
+    audience: str = ""
+    jwks_cache_ttl_seconds: int = 300
 
     def __post_init__(self):
-        """Enforce RS256-only per Identity Contract v1."""
-        if tuple(self.algorithms) != ("RS256",):
-            raise ValueError(
-                f"CloudForge Identity Contract v1 requires RS256 only. "
-                f"Got: {list(self.algorithms)}"
-            )
+        # Enforce RS256 invariant
+        algs = list(self.algorithms)
+        if algs != ["RS256"]:
+            raise ValueError("Only RS256 algorithm is supported by contract v1")
+        # Force tuple immutability
+        if not isinstance(self.algorithms, tuple):
+            object.__setattr__(self, 'algorithms', tuple(self.algorithms))
