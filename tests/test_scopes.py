@@ -68,3 +68,16 @@ def test_parse_scopes_studio_permission_format():
     assert "ingest:read" in result
     assert "ingest:write" in result
     assert "knowledge:read" in result
+
+
+def test_parse_scopes_null_scope_is_treated_as_missing():
+    # Characterization test (v1.1.8): JSON null is treated like an absent
+    # `scope` claim -> empty set -> 403 at require_scope. Documented in
+    # Identity Contract v1 §5. Do not change to 401 without a contract
+    # amendment and regression tests.
+    assert parse_scopes({"scope": None}) == frozenset()
+
+
+def test_parse_scopes_scopes_alongside_valid_scope_is_rejected():
+    with pytest.raises(ScopeFormatError):
+        parse_scopes({"scope": "ingest:read", "scopes": ["ingest:read"]})

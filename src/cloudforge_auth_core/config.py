@@ -1,5 +1,5 @@
-﻿from dataclasses import dataclass, field
-from typing import List, Tuple
+from dataclasses import dataclass
+from typing import Tuple
 
 @dataclass(frozen=True)
 class AuthConfig:

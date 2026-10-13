@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 from cloudforge_auth_core.config import AuthConfig
 
 def test_auth_config_accepts_rs256():
