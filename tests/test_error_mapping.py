@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends, status
 from fastapi.testclient import TestClient
 import pytest
 from cloudforge_auth_core.dependencies import build_auth_dependencies

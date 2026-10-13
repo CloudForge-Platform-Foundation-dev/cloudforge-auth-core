@@ -1,5 +1,4 @@
-# DRAFT for cloudforge-auth-core -> target path: .github/workflows/ci.yml
-# Status: NOT pushed anywhere. Read it, then decide whether to open a PR.
+# CI for cloudforge-auth-core: pytest (Python matrix) + gitleaks secret scan.
 #
 # Modelled on cloudforge-identity-service's ci.yml (pytest + gitleaks), with:
 #   - top-level least-privilege permissions

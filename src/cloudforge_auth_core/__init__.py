@@ -31,4 +31,4 @@ __all__ = [
     "parse_scopes",
 ]
 
-__version__ = "1.1.6"
+__version__ = "1.1.8"
